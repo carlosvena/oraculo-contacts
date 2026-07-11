@@ -33,6 +33,8 @@ oraculo-contacts audit examples/contacts.sample.json --format json --output repo
 oraculo-contacts --verbose audit examples/contacts.sample.json
 oraculo-contacts analyze examples/contacts.sample.json
 oraculo-contacts analyze examples/contacts.sample.json --format json --output reports/quality.json
+oraculo-contacts recommend examples/contacts.sample.json
+oraculo-contacts recommend examples/contacts.sample.json --format json --output reports/plan.json
 ```
 
 El formato de entrada se documenta en [docs/json-format.md](docs/json-format.md). Los códigos de
@@ -51,6 +53,8 @@ La arquitectura separa dominio, casos de uso, adaptadores de infraestructura y p
 Las decisiones y límites están en [docs/architecture.md](docs/architecture.md). El análisis avanzado,
 su score y sus niveles de confianza se describen en
 [docs/quality-analysis.md](docs/quality-analysis.md).
+Las propuestas, evidencia local y planes no ejecutables de v0.3 se documentan en
+[docs/safe-improvement-engine.md](docs/safe-improvement-engine.md).
 
 ## Licencia
 
