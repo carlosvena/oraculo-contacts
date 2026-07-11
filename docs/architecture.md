@@ -47,4 +47,17 @@ El dominio agrega tres capacidades independientes y componibles:
 `RecommendContactImprovements` orquesta el caso de uso y los adaptadores de presentación publican el
 contrato JSON `3.0` o consola. Los contratos JSON `1.0` y `2.0` no fueron modificados.
 
+## Versión 0.4: aplicación visual local
+
+`ui/app.py` compone la experiencia Streamlit y no contiene reglas de calidad. Reutiliza
+`analyze_quality`, `RecommendationEngine` y `JsonContactImporter`. `ui/view_models.py` concentra
+filtros, agregaciones y enmascarado como funciones puras probables sin depender de Streamlit.
+
+Los archivos subidos se decodifican y validan en memoria mediante `load_text`; no se crean archivos
+temporales ni se escribe en el origen. Las decisiones sobre recomendaciones viven en
+`st.session_state` y desaparecen al cerrar la sesión. La app visual se excluye del cálculo de cobertura
+por ser composición declarativa, mientras sus adaptadores, navegación de humo y funciones relevantes
+sí tienen pruebas automatizadas.
+
+
 
