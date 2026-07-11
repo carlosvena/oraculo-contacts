@@ -51,4 +51,3 @@ Las decisiones y límites del Sprint 1 están en [docs/architecture.md](docs/arc
 ## Licencia
 
 MIT. Consulte [LICENSE](LICENSE).
-
