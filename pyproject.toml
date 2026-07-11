@@ -27,12 +27,16 @@ dev = [
   "pytest-cov>=6,<7",
   "ruff>=0.9,<1",
 ]
+ui = ["streamlit>=1.41,<2"]
 
 [project.scripts]
 oraculo-contacts = "oraculo_contacts.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/oraculo_contacts"]
+
+[tool.hatch.build]
+include = ["src/oraculo_contacts/**/*.py", "src/oraculo_contacts/**/*.json", "src/oraculo_contacts/py.typed"]
 
 [tool.ruff]
 target-version = "py311"
@@ -59,6 +63,7 @@ pythonpath = ["src"]
 [tool.coverage.run]
 branch = true
 source = ["oraculo_contacts"]
+omit = ["src/oraculo_contacts/ui/app.py"]
 
 [tool.coverage.report]
 show_missing = true
