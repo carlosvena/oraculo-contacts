@@ -8,12 +8,17 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 
-from oraculo_contacts.application.use_cases import AuditContacts
+from oraculo_contacts.application.use_cases import AnalyzeContactQuality, AuditContacts
 from oraculo_contacts.exceptions import OraculoError
 from oraculo_contacts.infrastructure.json_importer import JsonContactImporter
 from oraculo_contacts.infrastructure.json_reporter import render_json, write_json_report
+from oraculo_contacts.infrastructure.quality_json_reporter import (
+    render_quality_json,
+    write_quality_json,
+)
 from oraculo_contacts.logging_config import configure_logging
 from oraculo_contacts.presentation.console_reporter import render_console
+from oraculo_contacts.presentation.quality_console_reporter import render_quality_console
 
 LOGGER = logging.getLogger(__name__)
 
@@ -39,6 +44,14 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         help="Escribe un reporte JSON en esta ruta; nunca puede ser la ruta de entrada.",
     )
+    analyze = subparsers.add_parser(
+        "analyze", help="Analiza calidad, inconsistencias y posibles duplicados."
+    )
+    analyze.add_argument("source", type=Path, help="Ruta del archivo JSON de contactos.")
+    analyze.add_argument(
+        "--format", choices=("console", "json"), default="console", help="Formato para stdout."
+    )
+    analyze.add_argument("--output", type=Path, help="Ruta opcional para un reporte JSON.")
     return parser
 
 
@@ -61,6 +74,19 @@ def run(argv: Sequence[str] | None = None) -> int:
                 report.contacts_scanned,
                 len(report.findings),
             )
+            return 0
+        if args.command == "analyze":
+            LOGGER.info("Iniciando análisis avanzado de calidad.")
+            quality = AnalyzeContactQuality(JsonContactImporter()).execute(args.source)
+            if args.output is not None:
+                write_quality_json(quality, args.output, args.source)
+                LOGGER.info("Reporte de calidad JSON escrito correctamente.")
+            output = (
+                render_quality_json(quality)
+                if args.format == "json"
+                else render_quality_console(quality)
+            )
+            sys.stdout.write(output)
             return 0
     except OraculoError as error:
         LOGGER.error("%s", error)
