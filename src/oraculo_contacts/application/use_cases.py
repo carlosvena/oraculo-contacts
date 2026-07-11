@@ -9,6 +9,7 @@ from oraculo_contacts.domain.auditor import audit_contacts
 from oraculo_contacts.domain.models import AuditReport
 from oraculo_contacts.domain.quality_analyzer import analyze_quality
 from oraculo_contacts.domain.quality_models import QualityReport
+from oraculo_contacts.domain.recommendations import ActionPlan, RecommendationEngine
 
 
 class AuditContacts:
@@ -34,3 +35,15 @@ class AnalyzeContactQuality:
     def execute(self, source: Path) -> QualityReport:
         """Importar y analizar calidad sin modificar la fuente."""
         return analyze_quality(self._importer.load(source))
+
+
+class RecommendContactImprovements:
+    """Crear un plan explicable sin ejecutar recomendaciones."""
+
+    def __init__(self, importer: ContactImporter) -> None:
+        """Inicializar con el puerto de importación de solo lectura."""
+        self._importer = importer
+
+    def execute(self, source: Path) -> ActionPlan:
+        """Importar una instantánea y devolver un plan inmutable."""
+        return RecommendationEngine().build_plan(self._importer.load(source))
