@@ -66,3 +66,26 @@ def test_sprint_one_audit_command_remains_compatible(tmp_path, capsys) -> None:
     source.write_text("[]", encoding="utf-8")
     assert run(["audit", str(source)]) == 0
     assert "Reporte de auditoría" in capsys.readouterr().out
+
+
+def test_recommend_outputs_json_and_never_changes_source(tmp_path, capsys) -> None:
+    source = tmp_path / "contacts.json"
+    destination = tmp_path / "plan.json"
+    original = json.dumps(
+        [
+            {
+                "id": "one",
+                "display_name": "  ada  lovelace ",
+                "phones": ["08005550101"],
+                "favorite": True,
+                "notes": "PROTECTED",
+            }
+        ]
+    )
+    source.write_text(original, encoding="utf-8")
+    exit_code = run(["recommend", str(source), "--format", "json", "--output", str(destination)])
+    payload = json.loads(capsys.readouterr().out)
+    assert exit_code == 0
+    assert payload["schema_version"] == "3.0"
+    assert "PROTECTED" not in destination.read_text(encoding="utf-8")
+    assert source.read_text(encoding="utf-8") == original
