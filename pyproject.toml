@@ -45,6 +45,7 @@ ignore = ["D203", "D213"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = ["D", "ANN"]
+"src/oraculo_contacts/infrastructure/json_importer.py" = ["ANN401"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -63,4 +64,3 @@ source = ["oraculo_contacts"]
 show_missing = true
 skip_covered = true
 fail_under = 85
-
