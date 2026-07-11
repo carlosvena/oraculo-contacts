@@ -1,0 +1,34 @@
+{
+  "contacts": [
+    {
+      "id": "demo-001",
+      "display_name": "Ada Ejemplo",
+      "given_name": "Ada",
+      "family_name": "Ejemplo",
+      "emails": ["ada@example.test"],
+      "phones": ["+54 11 5555 0101"],
+      "favorite": true,
+      "birthday": "1990-12-10",
+      "notes": "Dato ficticio protegido"
+    },
+    {
+      "id": "demo-002",
+      "display_name": "Bruno Demo",
+      "emails": ["bruno-at-example.test"],
+      "phones": []
+    },
+    {
+      "id": "demo-003",
+      "display_name": "Ada Alternativa",
+      "emails": ["ADA@example.test"],
+      "phones": ["+54 11 5555 9999"]
+    },
+    {
+      "id": "demo-004",
+      "display_name": "",
+      "emails": [],
+      "phones": []
+    }
+  ]
+}
+
