@@ -21,6 +21,7 @@ class Contact:
     family_name: str = ""
     emails: tuple[str, ...] = ()
     phones: tuple[str, ...] = ()
+    addresses: tuple[str, ...] = ()
     favorite: bool = False
     birthday: date | None = None
     notes: str | None = None
