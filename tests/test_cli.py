@@ -41,3 +41,28 @@ def test_refuses_output_over_source(tmp_path, capsys) -> None:
     assert exit_code == 2
     assert source.read_text(encoding="utf-8") == "[]"
     assert "sobrescribir" in capsys.readouterr().err
+
+
+def test_analyze_quality_json_and_preserve_source(tmp_path, capsys) -> None:
+    source = tmp_path / "contacts.json"
+    output = tmp_path / "quality.json"
+    original = json.dumps(
+        [
+            {"id": "one", "display_name": "Ada", "emails": ["same@example.test"]},
+            {"id": "two", "display_name": "Ada", "emails": ["same@example.test"]},
+        ]
+    )
+    source.write_text(original, encoding="utf-8")
+    exit_code = run(["analyze", str(source), "--format", "json", "--output", str(output)])
+    stdout = json.loads(capsys.readouterr().out)
+    assert exit_code == 0
+    assert stdout["summary"]["duplicate_candidates"] == 1
+    assert output.is_file()
+    assert source.read_text(encoding="utf-8") == original
+
+
+def test_sprint_one_audit_command_remains_compatible(tmp_path, capsys) -> None:
+    source = tmp_path / "contacts.json"
+    source.write_text("[]", encoding="utf-8")
+    assert run(["audit", str(source)]) == 0
+    assert "Reporte de auditoría" in capsys.readouterr().out
