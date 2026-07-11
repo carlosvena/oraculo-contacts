@@ -31,6 +31,8 @@ oraculo-contacts audit examples/contacts.sample.json
 oraculo-contacts audit examples/contacts.sample.json --format json
 oraculo-contacts audit examples/contacts.sample.json --format json --output reports/audit.json
 oraculo-contacts --verbose audit examples/contacts.sample.json
+oraculo-contacts analyze examples/contacts.sample.json
+oraculo-contacts analyze examples/contacts.sample.json --format json --output reports/quality.json
 ```
 
 El formato de entrada se documenta en [docs/json-format.md](docs/json-format.md). Los códigos de
@@ -46,7 +48,9 @@ pytest --cov
 ```
 
 La arquitectura separa dominio, casos de uso, adaptadores de infraestructura y presentación CLI.
-Las decisiones y límites del Sprint 1 están en [docs/architecture.md](docs/architecture.md).
+Las decisiones y límites están en [docs/architecture.md](docs/architecture.md). El análisis avanzado,
+su score y sus niveles de confianza se describen en
+[docs/quality-analysis.md](docs/quality-analysis.md).
 
 ## Licencia
 
