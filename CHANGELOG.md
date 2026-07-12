@@ -7,6 +7,18 @@ Los cambios relevantes de ORÁCULO CONTACTS se documentan aquí siguiendo una ad
 
 Sin cambios todavía.
 
+## [0.5.0] - 2026-07-12
+
+### Added
+
+- Importación local de Google Contacts CSV con encabezados en español e inglés.
+- Importación tolerante de vCard 3.0 y 4.0 con advertencias parciales.
+- Asistente visual con detección de formato, validación y vista previa enmascarada.
+- Búsqueda local por nombre, organización, teléfono y correo; nuevos filtros reales.
+- Workspace local opt-in con checksum y omisión de notas.
+- Informes de diagnóstico JSON y HTML enmascarados por defecto.
+- `VERIFICAR_ORACULO.bat` para diagnóstico de instalación en Windows.
+
 ## [0.4.0] - 2026-07-11
 
 ### Added

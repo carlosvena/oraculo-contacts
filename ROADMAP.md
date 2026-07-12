@@ -7,6 +7,7 @@
 - **0.3 — Mejora segura:** propuestas inmutables, conocimiento local en memoria y planes de acción
   explicables que nunca se ejecutan.
 - **0.4 — Experiencia visible:** dashboard local, explorador, duplicados y plan de mejora en español.
+- **0.5 — Importación real segura:** Google CSV, vCard, sesiones opt-in e informes enmascarados.
 
 ## Futuro, sujeto a decisión explícita
 
