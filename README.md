@@ -25,6 +25,7 @@ lectura.
 
 `VERIFICAR_ORACULO.bat` ofrece un diagnóstico rápido en español si necesitás comprobar Python,
 instalación, datos de demostración y disponibilidad del puerto local.
+`ACTUALIZAR_ORACULO.bat` actualiza dependencias locales sin borrar sesiones guardadas.
 
 ## Principios de seguridad
 
@@ -80,6 +81,8 @@ Las propuestas, evidencia local y planes no ejecutables de v0.3 se documentan en
 La interfaz visual y sus garantías se describen en [docs/visual-app.md](docs/visual-app.md).
 La importación de contactos reales y privacidad local se detallan en
 [docs/real-contact-import.md](docs/real-contact-import.md).
+El flujo de revisión y exportación segura está documentado en
+[docs/review-workflow.md](docs/review-workflow.md) y [docs/safe-export.md](docs/safe-export.md).
 
 ## Licencia
 

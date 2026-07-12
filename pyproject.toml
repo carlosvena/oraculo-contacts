@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "oraculo-contacts"
-version = "0.5.0"
+version = "0.6.0"
 description = "Auditor de contactos seguro, local y de solo lectura."
 readme = "README.md"
 requires-python = ">=3.11"

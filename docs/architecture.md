@@ -70,6 +70,16 @@ La UI conserva `ImportResult`, checksum y contactos en `st.session_state`. El wo
 desactivado hasta consentimiento explícito, rechaza rutas dentro del repositorio y omite notas. Los
 informes se construyen localmente y enmascaran correo, teléfono, dirección y notas salvo opt-in.
 
+## Versión 0.6: revisión y exportación
+
+`ChangeSet` modela decisiones inmutables y separa aprobación humana de `Contact`. La aplicación crea
+una vista previa mediante copias `dataclasses.replace`; solo cambios aprobados y no protegidos llegan
+a esa copia. `DecisionHistory` permite deshacer/rehacer decisiones, nunca archivos.
+
+`safe_export` serializa la copia en JSON, Google CSV o vCard, rechaza archivos existentes y adjunta un
+manifiesto con checksums, versión y garantía de origen intacto.
+
+
 
 
 

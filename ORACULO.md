@@ -54,6 +54,9 @@ humano y pueda justificarse con evidencia.
    reservados o sintéticos) en pruebas y ejemplos.
 7. Verificar inmutabilidad, clasificación telefónica conservadora y compatibilidad de contratos.
 8. Ejecutar las comprobaciones de la Definition of Done antes de publicar.
+9. Toda exportación corregida debe ser un archivo nuevo con manifiesto; nunca se sobrescribe el origen.
+10. Favoritos, cumpleaños, notas, fotografías, identificadores externos y etiquetas sensibles quedan
+    bloqueados frente a operaciones masivas.
 
 ## Definition of Done
 
@@ -68,4 +71,3 @@ Un cambio está terminado solamente cuando:
 - la documentación, arquitectura, changelog y decisiones relevantes están actualizados;
 - el árbol de trabajo queda limpio, los commits son revisables y existe un Pull Request;
 - no se incluyeron contactos reales, CSV, VCF, copias, secretos ni información privada.
-
