@@ -377,7 +377,7 @@ def _review_changes(contacts: tuple[Contact, ...]) -> None:
     st.header("Revisión de cambios")
     st.info("¿Qué está haciendo ORÁCULO? Te muestra opciones; solo vos decidís.")
     history: DecisionHistory = st.session_state.review_history
-    actions = st.columns(4)
+    actions = st.columns(5)
     if actions[0].button("Aprobar cambios de bajo riesgo"):
         st.session_state.review_history = history.record(history.current.approve_low_risk())
         st.rerun()
@@ -387,7 +387,15 @@ def _review_changes(contacts: tuple[Contact, ...]) -> None:
     if actions[2].button("Rehacer", disabled=not history.future):
         st.session_state.review_history = history.redo()
         st.rerun()
-    if actions[3].button("Restaurar decisiones"):
+    selected: set[str] = st.session_state.setdefault("selected_changes", set())
+    if actions[3].button("Rechazar seleccionadas", disabled=not selected):
+        updated = history.current
+        for change_id in selected:
+            updated = updated.decide(change_id, ChangeDecision.REJECTED)
+        st.session_state.review_history = history.record(updated)
+        st.session_state.selected_changes = set()
+        st.rerun()
+    if actions[4].button("Restaurar decisiones"):
         st.session_state.review_history = history.record(history.current.restore())
         st.rerun()
     changeset = history.current
@@ -415,6 +423,15 @@ def _review_changes(contacts: tuple[Contact, ...]) -> None:
             contact = by_ref.get(change.contact_ref)
             label = contact.display_name if contact else change.contact_ref
             with st.expander(f"{label or 'Sin nombre'} · {change.field} · {change.decision.value}"):
+                checked = st.checkbox(
+                    "Seleccionar para acción masiva",
+                    value=change.change_id in selected,
+                    key=f"select-{change.change_id}",
+                )
+                if checked:
+                    selected.add(change.change_id)
+                else:
+                    selected.discard(change.change_id)
                 if change.protected:
                     st.warning("Campo protegido: requiere aprobación individual explícita.")
                 left, right = st.columns(2)
@@ -492,13 +509,51 @@ def _preview_result(contacts: tuple[Contact, ...]) -> None:
     )
     for column, (label, value) in zip(metrics, values, strict=True):
         column.metric(label, value)
-    only_modified = st.checkbox("Solo contactos modificados", value=True)
+    filter_ = st.selectbox(
+        "Filtrar vista",
+        (
+            "Solo modificados",
+            "Solo conflictos",
+            "Solo alto riesgo",
+            "Solo campos protegidos",
+            "Solo duplicados",
+            "Solo teléfonos",
+            "Solo nombres",
+            "Solo correos",
+            "Todos",
+        ),
+    )
     approved_refs = {
         item.contact_ref for item in changeset.changes if item.decision is ChangeDecision.APPROVED
     }
     rows = []
     for before, after in zip(contacts, proposed, strict=True):
-        if only_modified and before.source_id not in approved_refs:
+        contact_changes = [
+            item for item in changeset.changes if item.contact_ref == before.source_id
+        ]
+        if filter_ == "Solo modificados" and before.source_id not in approved_refs:
+            continue
+        if filter_ == "Solo conflictos" and not any(
+            item.decision is ChangeDecision.CONFLICT for item in contact_changes
+        ):
+            continue
+        if filter_ == "Solo alto riesgo" and not any(
+            item.risk.value == "high" for item in contact_changes
+        ):
+            continue
+        if filter_ == "Solo campos protegidos" and not any(
+            item.protected for item in contact_changes
+        ):
+            continue
+        category_filters = {
+            "Solo duplicados": "duplicados potenciales",
+            "Solo teléfonos": "teléfonos",
+            "Solo nombres": "nombres",
+            "Solo correos": "correos",
+        }
+        if filter_ in category_filters and not any(
+            item.category == category_filters[filter_] for item in contact_changes
+        ):
             continue
         rows.append(
             {
