@@ -1,0 +1,4 @@
+Nombre,Nombre de pila,Apellidos,Correo electrónico 1 - Valor,Correo electrónico 2 - Valor,Teléfono 1 - Valor,Teléfono 2 - Valor,Dirección 1 - Formateada,Organización 1 - Nombre,Organización 1 - Cargo,Cumpleaños,Notas,Etiquetas,Columna desconocida
+Ángela Demo,Ángela,Demo,angela@example.test,otra@example.test,+54 9 11 5555-0101,0800-555-0101,"Calle Ficticia 1",Empresa Ejemplo,Analista,1990-02-03,Nota ficticia,"Amigos;Trabajo",ignorada
+Sin Vías,Sin,Vías,,,,,,,,fecha-invalida,,,
+,,,,,,,,,,,,,,
