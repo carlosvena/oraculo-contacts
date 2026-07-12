@@ -5,11 +5,17 @@ Los cambios relevantes de ORÁCULO CONTACTS se documentan aquí siguiendo una ad
 
 ## [Unreleased]
 
-### Planned
+Sin cambios todavía.
 
-- Propuestas seguras de normalización.
-- Evidencia y procedencia en memoria.
-- Motor explicable de recomendaciones y planes de acción.
+## [0.3.0] - 2026-07-11
+
+### Added
+
+- Propuestas inmutables de normalización de nombres, correos y teléfonos argentinos.
+- Clasificación conservadora de móviles, fijos, 0800, 0810 y desconocidos.
+- Modelos de hechos, evidencias y procedencia con registro exclusivamente en memoria.
+- Motor determinista de recomendaciones y planes de acción no ejecutables.
+- Comando `recommend` con salidas de consola y JSON `3.0`.
 
 ## [0.2.0] - 2026-07-11
 
@@ -26,4 +32,3 @@ Los cambios relevantes de ORÁCULO CONTACTS se documentan aquí siguiendo una ad
 - Importación JSON de solo lectura y auditoría inicial.
 - Reportes de consola y JSON `1.0` mediante `audit`.
 - Arquitectura limpia, CLI, logging y pruebas automatizadas.
-

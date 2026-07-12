@@ -33,3 +33,18 @@
   reportes solicitados explícitamente. No usar IA generativa ni servicios externos.
 - **Motivo:** reducir exposición de información sensible y mantener resultados reproducibles.
 
+## D-005 — Planes sin capacidad de ejecución
+
+- **Fecha:** 2026-07-11
+- **Estado:** aceptada
+- **Decisión:** `ActionPlan` y `Recommendation` son valores inmutables sin métodos `apply` o `execute`.
+  La prioridad pondera beneficio y confianza, penalizados por riesgo y esfuerzo.
+- **Motivo:** permitir planificación útil sin crear una ruta accidental de modificación de contactos.
+
+## D-006 — Contrato independiente para recomendaciones
+
+- **Fecha:** 2026-07-11
+- **Estado:** aceptada
+- **Decisión:** `recommend` usa JSON `3.0`; `audit` `1.0` y `analyze` `2.0` permanecen sin cambios.
+- **Motivo:** preservar compatibilidad hacia atrás y hacer explícita la evolución del producto.
+

@@ -33,3 +33,18 @@ comparar y no forma parte del modelo persistente ni de los reportes.
 El comando `audit` y su contrato JSON `1.0` permanecen sin cambios. El nuevo comando `analyze`
 publica un contrato JSON `2.0`, lo que mantiene compatibilidad con consumidores del Sprint 1.
 
+## Versión 0.3: motor de mejora segura
+
+El dominio agrega tres capacidades independientes y componibles:
+
+- `proposals` produce propuestas inmutables con valor original, valor sugerido, reglas, confianza y
+  riesgo. Nunca recibe funciones de escritura ni opera sobre campos protegidos.
+- `knowledge` representa hechos, evidencias y procedencia en un registro en memoria. No posee
+  adaptador de persistencia ni llamadas externas.
+- `recommendations` reutiliza `analyze_quality` y las propuestas para crear un `ActionPlan` ordenado.
+  El plan no ofrece métodos de ejecución o aplicación.
+
+`RecommendContactImprovements` orquesta el caso de uso y los adaptadores de presentación publican el
+contrato JSON `3.0` o consola. Los contratos JSON `1.0` y `2.0` no fueron modificados.
+
+
