@@ -123,6 +123,12 @@ class VCardImporter:
         source_id = _stable_id(uid or "\x1f".join(card), seen_ids)
         organization = _first(fields, "ORG").replace(";", " · ")
         addresses = tuple(_address(value) for value in fields.get("ADR", ()) if _address(value))
+        labels = tuple(
+            label.strip()
+            for value in fields.get("CATEGORIES", ())
+            for label in value.split(",")
+            if label.strip()
+        )
         return (
             Contact(
                 source_id=source_id,
@@ -130,15 +136,13 @@ class VCardImporter:
                 given_name=given_name,
                 family_name=family_name,
                 emails=tuple(fields.get("EMAIL", ())),
-                phones=tuple(fields.get("TEL", ())),
+                phones=tuple(_phone(value) for value in fields.get("TEL", ())),
                 addresses=addresses,
                 organization=organization,
                 job_title=_first(fields, "TITLE"),
-                labels=tuple(
-                    label.strip()
-                    for value in fields.get("CATEGORIES", ())
-                    for label in value.split(",")
-                    if label.strip()
+                labels=labels,
+                favorite=any(
+                    label.casefold() in {"starred", "favoritos", "destacados"} for label in labels
                 ),
                 birthday=birthday,
                 notes=_first(fields, "NOTE") or None,
@@ -205,6 +209,10 @@ def _parse_birthday(value: str, location: str, warnings: list[ImportWarning]) ->
 
 def _address(value: str) -> str:
     return ", ".join(part for part in value.split(";") if part)
+
+
+def _phone(value: str) -> str:
+    return value.removeprefix("tel:")
 
 
 def _stable_id(material: str, seen_ids: set[str]) -> str:

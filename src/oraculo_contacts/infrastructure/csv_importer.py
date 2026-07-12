@@ -99,6 +99,7 @@ class GoogleCsvImporter:
             warnings.append(ImportWarning(location, "missing_name", "El contacto no tiene nombre."))
         birthday = _birthday(_first(values, "birthday"), location, warnings)
         source_id = _stable_id(row, seen_ids)
+        labels = _split_labels(values.get("labels", ()))
         return (
             Contact(
                 source_id=source_id,
@@ -110,7 +111,10 @@ class GoogleCsvImporter:
                 addresses=tuple(values.get("address", ())),
                 organization=_first(values, "organization"),
                 job_title=_first(values, "job_title"),
-                labels=_split_labels(values.get("labels", ())),
+                labels=labels,
+                favorite=any(
+                    label.casefold() in {"starred", "favoritos", "destacados"} for label in labels
+                ),
                 birthday=birthday,
                 notes=_first(values, "notes") or None,
             ),
