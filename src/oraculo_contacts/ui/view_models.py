@@ -84,19 +84,44 @@ def filter_contacts(
     birthday: PresenceFilter = PresenceFilter.ALL,
     phone: PresenceFilter = PresenceFilter.ALL,
     email: PresenceFilter = PresenceFilter.ALL,
+    address: PresenceFilter = PresenceFilter.ALL,
     quality: QualityLevel = QualityLevel.ALL,
+    organization: str = "",
+    label: str = "",
 ) -> tuple[Contact, ...]:
     """Filtrar contactos sin alterar el orden ni los objetos originales."""
     scores = {item.contact_ref: item.score for item in analyze_quality(contacts).contacts}
     normalized_query = query.strip().casefold()
+    normalized_organization = organization.strip().casefold()
+    normalized_label = label.strip().casefold()
     return tuple(
         contact
         for contact in contacts
-        if (not normalized_query or normalized_query in _name(contact).casefold())
+        if (
+            not normalized_query
+            or any(
+                normalized_query in value.casefold()
+                for value in (
+                    _name(contact),
+                    contact.organization,
+                    *contact.phones,
+                    *contact.emails,
+                )
+            )
+        )
         and _presence(contact.favorite, favorite)
         and _presence(contact.birthday is not None, birthday)
         and _presence(bool(contact.phones), phone)
         and _presence(bool(contact.emails), email)
+        and _presence(bool(contact.addresses), address)
+        and (
+            not normalized_organization
+            or normalized_organization == contact.organization.casefold()
+        )
+        and (
+            not normalized_label
+            or any(normalized_label == item.casefold() for item in contact.labels)
+        )
         and _quality_matches(scores[contact.source_id], quality)
     )
 
@@ -106,6 +131,7 @@ def contact_summary(contact: Contact, score: int) -> dict[str, str | int]:
     return {
         "Referencia": contact.source_id,
         "Nombre": _name(contact) or "Sin nombre",
+        "Organización": contact.organization or "—",
         "Teléfono": mask_phone(contact.phones[0]) if contact.phones else "—",
         "Correo": mask_email(contact.emails[0]) if contact.emails else "—",
         "Calidad": score,

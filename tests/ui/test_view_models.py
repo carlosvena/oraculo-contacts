@@ -66,3 +66,22 @@ def test_filters_by_query_presence_and_quality_without_mutation() -> None:
     assert result == (contacts[0],)
     assert filter_contacts(contacts, quality=QualityLevel.LOW) == (contacts[1],)
     assert repr(contacts) == snapshot
+
+
+def test_filters_real_contact_fields_locally() -> None:
+    contact = Contact(
+        "one",
+        "Ana Demo",
+        emails=("ana@example.test",),
+        phones=("08005550101",),
+        addresses=("Calle Demo",),
+        organization="Empresa Ejemplo",
+        labels=("Trabajo",),
+    )
+    contacts = (contact,)
+    assert filter_contacts(contacts, query="empresa") == contacts
+    assert filter_contacts(contacts, query="0800") == contacts
+    assert filter_contacts(contacts, query="ana@example") == contacts
+    assert filter_contacts(contacts, organization="Empresa Ejemplo") == contacts
+    assert filter_contacts(contacts, label="Trabajo") == contacts
+    assert filter_contacts(contacts, address=PresenceFilter.WITH) == contacts

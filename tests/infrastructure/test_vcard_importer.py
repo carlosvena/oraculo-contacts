@@ -37,3 +37,36 @@ def test_rejects_empty_or_unstructured_vcard() -> None:
         VCardImporter().load_text("")
     with pytest.raises(ImportError, match="BEGIN:VCARD"):
         VCardImporter().load_text("FN:No block")
+
+
+def test_vcard_recovers_partial_cards_and_reports_safe_warnings() -> None:
+    content = """BEGIN:VCARD
+VERSION:2.1
+ORG:Empresa Ficticia
+BDAY:fecha-invalida
+NOTE;ENCODING=QUOTED-PRINTABLE:Texto=20ficticio
+ línea plegada
+línea-sin-separador
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+END:VCARD
+"""
+    result = VCardImporter().load_text(content)
+    assert len(result.contacts) == 1
+    assert result.rejected_rows == 1
+    assert result.contacts[0].display_name == ""
+    assert {warning.code for warning in result.warnings} >= {
+        "unsupported_version",
+        "unsupported_encoding",
+        "invalid_line",
+        "missing_name",
+        "invalid_birthday",
+        "empty_card",
+    }
+
+
+def test_duplicate_vcards_receive_unique_stable_ids() -> None:
+    card = "BEGIN:VCARD\nVERSION:4.0\nFN:Demo\nEND:VCARD\n"
+    result = VCardImporter().load_text(card + card)
+    assert len({contact.source_id for contact in result.contacts}) == 2

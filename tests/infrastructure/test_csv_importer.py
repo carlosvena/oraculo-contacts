@@ -45,3 +45,10 @@ def test_csv_ids_are_stable_and_bom_is_supported() -> None:
 def test_rejects_empty_csv() -> None:
     with pytest.raises(ImportError, match="vacío"):
         GoogleCsvImporter().load_text("")
+
+
+def test_duplicate_rows_receive_unique_ids_and_missing_name_warning() -> None:
+    content = "E-mail 1 - Value\ncontact@example.test\ncontact@example.test\n"
+    result = GoogleCsvImporter().load_text(content)
+    assert len({contact.source_id for contact in result.contacts}) == 2
+    assert all(warning.code == "missing_name" for warning in result.warnings)
