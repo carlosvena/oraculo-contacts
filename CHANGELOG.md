@@ -7,6 +7,17 @@ Los cambios relevantes de ORÁCULO CONTACTS se documentan aquí siguiendo una ad
 
 Sin cambios todavía.
 
+## [0.6.0] - 2026-07-12
+
+### Added
+
+- Bandeja visual de revisión con decisiones individuales y aprobación masiva segura.
+- ChangeSet inmutable, conflictos, protección estricta y recuperación de decisiones.
+- Vista previa antes/después y calidad estimada.
+- Exportación de copias nuevas JSON, Google CSV y vCard con manifiesto y checksums.
+- Flujo guiado Importar → Analizar → Revisar → Vista previa → Exportar.
+- `ACTUALIZAR_ORACULO.bat` sin eliminación de sesiones o datos.
+
 ## [0.5.0] - 2026-07-12
 
 ### Added

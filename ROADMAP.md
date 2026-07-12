@@ -8,6 +8,7 @@
   explicables que nunca se ejecutan.
 - **0.4 — Experiencia visible:** dashboard local, explorador, duplicados y plan de mejora en español.
 - **0.5 — Importación real segura:** Google CSV, vCard, sesiones opt-in e informes enmascarados.
+- **0.6 — Revisión segura:** decisiones humanas, vista previa, recuperación y exportación de copias.
 
 ## Futuro, sujeto a decisión explícita
 
