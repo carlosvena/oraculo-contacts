@@ -1,0 +1,96 @@
+{
+  "contacts": [
+    {
+      "id": "demo-001",
+      "display_name": "Ana Torres",
+      "given_name": "Ana",
+      "family_name": "Torres",
+      "emails": ["ana.torres@example.test"],
+      "phones": ["+54 9 11 5555-0101"],
+      "addresses": ["Calle Ficticia 123, Buenos Aires"],
+      "favorite": true,
+      "birthday": "1988-04-12",
+      "notes": "Amiga de la universidad; información completamente ficticia."
+    },
+    {
+      "id": "demo-002",
+      "display_name": "Ana M. Torres",
+      "emails": ["ANA.TORRES@example.test"],
+      "phones": ["+54 9 11 5555-0101"],
+      "favorite": false
+    },
+    {
+      "id": "demo-003",
+      "display_name": "Bruno Díaz",
+      "emails": ["bruno.diaz@example.test"],
+      "phones": ["+54 11 4444-0202"],
+      "addresses": ["Avenida Demo 456, Córdoba"],
+      "birthday": "1975-09-03"
+    },
+    {
+      "id": "demo-004",
+      "display_name": "Carla Ejemplo",
+      "emails": [],
+      "phones": ["0800-555-0303"],
+      "notes": "Contacto comercial ficticio."
+    },
+    {
+      "id": "demo-005",
+      "display_name": "Centro de Ayuda",
+      "emails": ["ayuda@example.test"],
+      "phones": ["0810-555-0404"]
+    },
+    {
+      "id": "demo-006",
+      "display_name": "diego   martinez",
+      "emails": ["Diego@EXAMPLE.TEST "],
+      "phones": ["+54 9 351 555-0505"],
+      "favorite": true,
+      "birthday": "1992-01-20",
+      "notes": "Revisar capitalización; dato ficticio."
+    },
+    {
+      "id": "demo-007",
+      "display_name": "Elena Demo",
+      "emails": ["correo-invalido"],
+      "phones": [],
+      "addresses": ["Pasaje Sintético 7, Mendoza"]
+    },
+    {
+      "id": "demo-008",
+      "display_name": "",
+      "emails": [],
+      "phones": []
+    },
+    {
+      "id": "demo-009",
+      "display_name": "Federico López",
+      "emails": ["federico.lopez@example.test"],
+      "phones": ["+54 11 4333-0606"],
+      "birthday": "1981-11-27",
+      "notes": "Proveedor ficticio con teléfono fijo."
+    },
+    {
+      "id": "demo-010",
+      "display_name": "Federico Lopez",
+      "emails": ["otro.federico@example.test"],
+      "phones": ["+54 11 4222-0707"]
+    },
+    {
+      "id": "demo-011",
+      "display_name": "Gabriela Norte",
+      "emails": ["gabriela@example.test"],
+      "phones": ["+54 9 261 555-0808"],
+      "addresses": ["Ruta Imaginaria 88, Salta"],
+      "favorite": true
+    },
+    {
+      "id": "demo-012",
+      "display_name": "Hotel Prueba",
+      "emails": ["reservas@example.test"],
+      "phones": ["+54 341 555-0909"],
+      "notes": "Organización ficticia."
+    }
+  ]
+}
+

@@ -24,6 +24,18 @@ class JsonContactImporter:
         except (OSError, UnicodeError, json.JSONDecodeError) as error:
             raise ImportError(f"No se pudo leer JSON válido desde {source}: {error}") from error
 
+        return self._parse_payload(payload)
+
+    def load_text(self, content: str, label: str = "archivo cargado") -> tuple[Contact, ...]:
+        """Validar JSON recibido en memoria sin crear ni modificar archivos."""
+        try:
+            payload = json.loads(content)
+        except json.JSONDecodeError as error:
+            raise ImportError(f"No se pudo leer JSON válido desde {label}: {error}") from error
+        return self._parse_payload(payload)
+
+    def _parse_payload(self, payload: Any) -> tuple[Contact, ...]:
+        """Validar la raíz y convertir todos los registros."""
         raw_contacts = payload.get("contacts") if isinstance(payload, dict) else payload
         if not isinstance(raw_contacts, list):
             raise ImportError(
@@ -52,6 +64,7 @@ class JsonContactImporter:
             family_name=self._text(item, "family_name", index),
             emails=self._strings(item, "emails", index),
             phones=self._strings(item, "phones", index),
+            addresses=self._strings(item, "addresses", index),
             favorite=favorite,
             birthday=birthday,
             notes=notes,

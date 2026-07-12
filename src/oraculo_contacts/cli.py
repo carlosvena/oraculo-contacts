@@ -30,6 +30,7 @@ from oraculo_contacts.presentation.quality_console_reporter import render_qualit
 from oraculo_contacts.presentation.recommendation_console_reporter import (
     render_action_plan_console,
 )
+from oraculo_contacts.ui.launcher import launch_ui
 
 LOGGER = logging.getLogger(__name__)
 
@@ -71,6 +72,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--format", choices=("console", "json"), default="console", help="Formato para stdout."
     )
     recommend.add_argument("--output", type=Path, help="Ruta opcional para el plan JSON explícito.")
+    subparsers.add_parser("ui", help="Inicia la aplicación visual local en el navegador.")
     return parser
 
 
@@ -119,6 +121,8 @@ def run(argv: Sequence[str] | None = None) -> int:
             )
             sys.stdout.write(output)
             return 0
+        if args.command == "ui":
+            return launch_ui()
     except OraculoError as error:
         LOGGER.error("%s", error)
         return 2

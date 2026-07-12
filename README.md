@@ -4,6 +4,23 @@ Auditor local de contactos, seguro y estrictamente de solo lectura. Importa una 
 detecta problemas de calidad y genera reportes en consola o JSON sin modificar, eliminar ni
 fusionar contactos.
 
+## Abrir la aplicación visual
+
+En Windows, la forma más simple es:
+
+1. Hacer doble clic en `INSTALAR_ORACULO.bat` una sola vez.
+2. Hacer doble clic en `INICIAR_ORACULO.bat` cada vez que quiera usar la aplicación.
+
+También puede iniciarse por consola:
+
+```bash
+python -m pip install -e ".[ui]"
+oraculo-contacts ui
+```
+
+La aplicación abre en el navegador y comienza con 12 contactos ficticios. Incluye resumen visual,
+explorador, candidatos a duplicado y plan de mejora. Todo funciona localmente y en modo solo lectura.
+
 ## Principios de seguridad
 
 - El archivo de origen se abre exclusivamente en modo lectura.
@@ -55,6 +72,7 @@ su score y sus niveles de confianza se describen en
 [docs/quality-analysis.md](docs/quality-analysis.md).
 Las propuestas, evidencia local y planes no ejecutables de v0.3 se documentan en
 [docs/safe-improvement-engine.md](docs/safe-improvement-engine.md).
+La interfaz visual y sus garantías se describen en [docs/visual-app.md](docs/visual-app.md).
 
 ## Licencia
 

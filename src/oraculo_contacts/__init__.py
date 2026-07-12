@@ -3,4 +3,4 @@
 from oraculo_contacts.domain.models import Contact
 
 __all__ = ["Contact"]
-__version__ = "0.3.0"
+__version__ = "0.4.0"

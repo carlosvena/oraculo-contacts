@@ -7,6 +7,17 @@ Los cambios relevantes de ORÁCULO CONTACTS se documentan aquí siguiendo una ad
 
 Sin cambios todavía.
 
+## [0.4.0] - 2026-07-11
+
+### Added
+
+- Aplicación visual local en español basada en Streamlit.
+- Dashboard de métricas, explorador con filtros y ficha individual.
+- Centro de posibles duplicados con comparación segura.
+- Plan de mejora con decisiones guardadas únicamente durante la sesión.
+- Demo de 12 contactos ficticios y carga JSON enteramente en memoria.
+- Comando `oraculo-contacts ui` e instaladores de doble clic para Windows.
+
 ## [0.3.0] - 2026-07-11
 
 ### Added
