@@ -16,4 +16,13 @@ build/
 *.log
 reports/*.json
 !reports/.gitkeep
+*.csv
+*.vcf
+*.vcard
+workspace/
+sessions/
+*.session.json
+!tests/fixtures/*.csv
+!tests/fixtures/*.vcf
+!tests/fixtures/*.vcard
 

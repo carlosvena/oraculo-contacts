@@ -10,7 +10,14 @@ from oraculo_contacts.domain.models import Contact
 from oraculo_contacts.domain.quality_analyzer import analyze_quality
 from oraculo_contacts.domain.recommendations import RecommendationEngine
 from oraculo_contacts.exceptions import OraculoError
-from oraculo_contacts.infrastructure.json_importer import JsonContactImporter
+from oraculo_contacts.infrastructure.contact_import_service import import_contacts
+from oraculo_contacts.infrastructure.diagnostic_report import (
+    diagnostic_payload,
+    render_diagnostic_html,
+    render_diagnostic_json,
+)
+from oraculo_contacts.infrastructure.import_models import ImportResult
+from oraculo_contacts.infrastructure.workspace import save_workspace, source_checksum
 from oraculo_contacts.ui.view_models import (
     PresenceFilter,
     QualityLevel,
@@ -42,33 +49,88 @@ st.markdown(
 
 
 def _load_contacts() -> tuple[Contact, ...] | None:
-    """Elegir demo o archivo en memoria y presentar errores amigables."""
-    st.sidebar.subheader("Datos")
-    source = st.sidebar.radio(
-        "Origen",
-        ("Datos de demostración", "Cargar archivo JSON"),
-        help="El archivo cargado se lee en memoria y nunca se modifica.",
+    """Asistir una importación segura y mantenerla únicamente en sesión."""
+    if "active_contacts" in st.session_state:
+        result: ImportResult = st.session_state.import_result
+        st.sidebar.success(f"Sesión activa: {len(result.contacts)} contactos")
+        return result.contacts
+    st.subheader("Abrí tus contactos")
+    st.write(
+        "Para exportar tus contactos desde Google: "
+        "Google Contacts → Exportar → CSV de Google o vCard."
     )
-    importer = JsonContactImporter()
+    buttons = st.columns(3)
+    if buttons[0].button(
+        "Probar con datos de demostración", type="primary", use_container_width=True
+    ):
+        demo_path = Path(__file__).with_name("demo_contacts.json")
+        content = demo_path.read_text(encoding="utf-8")
+        result = import_contacts(demo_path.name, content)
+        _activate_import(result, content.encode("utf-8"), demo_path.name)
+        st.rerun()
+    if buttons[1].button("Importar Google Contacts CSV", use_container_width=True):
+        st.session_state.import_mode = "csv"
+    if buttons[2].button("Importar archivo VCF", use_container_width=True):
+        st.session_state.import_mode = "vcf"
+    mode = st.session_state.get("import_mode")
+    st.markdown(
+        '<div class="safe-banner">ORÁCULO trabajará en modo solo lectura. '
+        "El archivo original no será modificado.</div>",
+        unsafe_allow_html=True,
+    )
+    if mode is None:
+        st.caption("También se admiten archivos JSON desde la pantalla de importación.")
+        return None
+    types = ("csv",) if mode == "csv" else ("vcf", "vcard", "json")
+    uploaded = st.file_uploader("Seleccionar archivo", type=types)
+    if uploaded is None:
+        if st.button("Cancelar importación"):
+            st.session_state.pop("import_mode", None)
+            st.rerun()
+        return None
     try:
-        if source == "Datos de demostración":
-            demo_path = Path(__file__).with_name("demo_contacts.json")
-            contacts = importer.load(demo_path)
-            st.sidebar.success(f"Demo cargada: {len(contacts)} contactos ficticios")
-            return contacts
-        uploaded = st.sidebar.file_uploader("Seleccionar JSON", type=("json",))
-        if uploaded is None:
-            st.info("Elegí un archivo JSON en la barra lateral para comenzar.")
-            return None
-        content = uploaded.getvalue().decode("utf-8")
-        contacts = importer.load_text(content, uploaded.name)
-        st.sidebar.success(f"Archivo válido: {len(contacts)} contactos")
-        return contacts
+        raw = uploaded.getvalue()
+        content = raw.decode("utf-8-sig")
+        result = import_contacts(uploaded.name, content)
+        st.write(
+            f"**Archivo:** {uploaded.name} · **Tamaño:** {len(raw):,} bytes · "
+            f"**Formato:** {result.format.value.upper()}"
+        )
+        summary = st.columns(4)
+        summary[0].metric("Contactos válidos", len(result.contacts))
+        summary[1].metric("Con advertencias", result.contacts_with_warnings)
+        summary[2].metric("Filas rechazadas", result.rejected_rows)
+        summary[3].metric("Campos desconocidos", len(result.unknown_fields))
+        st.write("**Campos reconocidos:**", ", ".join(result.recognized_fields) or "Ninguno")
+        if result.unknown_fields:
+            st.write("**Campos desconocidos:**", ", ".join(result.unknown_fields))
+        st.caption("Vista previa segura de hasta 10 contactos")
+        st.dataframe(
+            [contact_summary(contact, 0) for contact in result.contacts[:10]],
+            hide_index=True,
+            width="stretch",
+        )
+        actions = st.columns(2)
+        if actions[0].button("Analizar en modo seguro", type="primary", use_container_width=True):
+            _activate_import(result, raw, uploaded.name)
+            st.rerun()
+        if actions[1].button("Cancelar sin guardar", use_container_width=True):
+            st.session_state.pop("import_mode", None)
+            st.rerun()
     except UnicodeDecodeError:
         st.error("El archivo debe estar codificado como UTF-8.")
     except OraculoError as error:
         st.error(f"No pudimos cargar el archivo: {error}")
     return None
+
+
+def _activate_import(result: ImportResult, raw: bytes, filename: str) -> None:
+    """Activar una instantánea en memoria después de confirmación humana."""
+    st.session_state.active_contacts = result.contacts
+    st.session_state.import_result = result
+    st.session_state.source_checksum = source_checksum(raw)
+    st.session_state.source_filename = filename
+    st.session_state.pop("import_mode", None)
 
 
 def _dashboard(contacts: tuple[Contact, ...]) -> None:
@@ -97,6 +159,13 @@ def _dashboard(contacts: tuple[Contact, ...]) -> None:
     for column, (label, value) in zip(second, cards_2, strict=True):
         column.metric(label, value)
     st.caption("Las métricas se calculan localmente. Ningún contacto fue modificado.")
+    result: ImportResult = st.session_state.import_result
+    imported = st.columns(3)
+    imported[0].metric(
+        "Organizaciones", len({item.organization for item in contacts if item.organization})
+    )
+    imported[1].metric("Contactos sin nombre", sum(not item.display_name for item in contacts))
+    imported[2].metric("Advertencias de importación", len(result.warnings))
 
 
 def _contacts(contacts: tuple[Contact, ...]) -> None:
@@ -105,13 +174,26 @@ def _contacts(contacts: tuple[Contact, ...]) -> None:
     quality_report = analyze_quality(contacts)
     scores = {item.contact_ref: item.score for item in quality_report.contacts}
     assessments = {item.contact_ref: item for item in quality_report.contacts}
-    query = st.text_input("Buscar por nombre", placeholder="Ej.: Ana Torres")
-    filters = st.columns(5)
+    query = st.text_input(
+        "Búsqueda rápida",
+        placeholder="Nombre, organización, teléfono o correo (búsqueda local)",
+    )
+    filters = st.columns(6)
     favorite = PresenceFilter(filters[0].selectbox("Favorito", list(PresenceFilter)))
     birthday = PresenceFilter(filters[1].selectbox("Cumpleaños", list(PresenceFilter)))
     phone = PresenceFilter(filters[2].selectbox("Teléfono", list(PresenceFilter)))
     email = PresenceFilter(filters[3].selectbox("Correo", list(PresenceFilter)))
     level = QualityLevel(filters[4].selectbox("Calidad", list(QualityLevel)))
+    address = PresenceFilter(filters[5].selectbox("Dirección", list(PresenceFilter)))
+    organizations = ("", *sorted({item.organization for item in contacts if item.organization}))
+    labels = ("", *sorted({label for item in contacts for label in item.labels}))
+    extra_filters = st.columns(2)
+    organization = extra_filters[0].selectbox(
+        "Organización", organizations, format_func=lambda value: value or "Todas"
+    )
+    label = extra_filters[1].selectbox(
+        "Etiqueta", labels, format_func=lambda value: value or "Todas"
+    )
     visible = filter_contacts(
         contacts,
         query=query,
@@ -119,7 +201,10 @@ def _contacts(contacts: tuple[Contact, ...]) -> None:
         birthday=birthday,
         phone=phone,
         email=email,
+        address=address,
         quality=level,
+        organization=organization,
+        label=label,
     )
     st.caption(f"{len(visible)} contacto(s). Teléfonos y correos aparecen ocultos en esta vista.")
     st.dataframe(
@@ -147,6 +232,9 @@ def _contacts(contacts: tuple[Contact, ...]) -> None:
         st.write("**Correos:**", ", ".join(selected.emails) or "Sin correo")
         st.write("**Teléfonos:**", ", ".join(selected.phones) or "Sin teléfono")
         st.write("**Direcciones:**", ", ".join(selected.addresses) or "Sin dirección")
+        st.write("**Organización:**", selected.organization or "Sin organización")
+        st.write("**Cargo:**", selected.job_title or "Sin cargo")
+        st.write("**Etiquetas:**", ", ".join(selected.labels) or "Sin etiquetas")
         st.write(
             "**Cumpleaños:**", selected.birthday.isoformat() if selected.birthday else "Sin dato"
         )
@@ -240,6 +328,64 @@ def _plan(contacts: tuple[Contact, ...]) -> None:
     st.info("Estas selecciones viven solo en memoria y se pierden al cerrar la sesión.")
 
 
+def _reports(contacts: tuple[Contact, ...]) -> None:
+    """Ofrecer informes explícitos enmascarados por defecto."""
+    st.header("Informe de diagnóstico")
+    include_sensitive = st.checkbox("Incluir datos sensibles en el informe", value=False)
+    if include_sensitive:
+        st.warning(
+            "El informe incluirá notas, teléfonos, correos y direcciones completos. "
+            "Guardalo únicamente en una ubicación privada."
+        )
+    result: ImportResult = st.session_state.import_result
+    payload = diagnostic_payload(contacts, result.warnings, include_sensitive=include_sensitive)
+    json_report = render_diagnostic_json(payload)
+    html_report = render_diagnostic_html(payload)
+    downloads = st.columns(2)
+    downloads[0].download_button(
+        "Descargar informe JSON",
+        json_report,
+        file_name="oraculo-diagnostico.json",
+        mime="application/json",
+        use_container_width=True,
+    )
+    downloads[1].download_button(
+        "Descargar informe HTML",
+        html_report,
+        file_name="oraculo-diagnostico.html",
+        mime="text/html",
+        use_container_width=True,
+    )
+    st.caption("La descarga no modifica el archivo original ni los contactos.")
+
+
+def _workspace_controls(contacts: tuple[Contact, ...]) -> None:
+    """Mostrar persistencia local solo cuando el usuario la activa."""
+    with st.sidebar.expander("Sesión local opcional"):
+        enabled = st.checkbox("Guardar sesión local", value=False)
+        if enabled:
+            st.warning("Se guardarán contactos y checksum. Las notas se omitirán.")
+            destination = st.text_input("Carpeta local elegida por vos")
+            consent = st.checkbox("Confirmo que deseo guardar esta copia local")
+            if st.button("Guardar sesión", disabled=not (destination and consent)):
+                try:
+                    output = save_workspace(
+                        contacts,
+                        Path(destination),
+                        source_sha256=st.session_state.source_checksum,
+                        repository_root=Path(__file__).parents[3],
+                    )
+                    st.success(f"Sesión guardada en {output}")
+                except OraculoError as error:
+                    st.error(str(error))
+    if st.sidebar.button("Cerrar sesión y borrar datos temporales", type="secondary"):
+        for key in tuple(st.session_state):
+            del st.session_state[key]
+        st.cache_data.clear()
+        st.cache_resource.clear()
+        st.rerun()
+
+
 def main() -> None:
     """Componer la navegación principal."""
     st.title("ORÁCULO CONTACTS")
@@ -249,15 +395,18 @@ def main() -> None:
     contacts = _load_contacts()
     if contacts is None:
         return
+    _workspace_controls(contacts)
     st.sidebar.divider()
     page = st.sidebar.radio(
-        "Navegación", ("Resumen", "Contactos", "Posibles duplicados", "Plan de mejora")
+        "Navegación",
+        ("Resumen", "Contactos", "Posibles duplicados", "Plan de mejora", "Informes"),
     )
     {
         "Resumen": _dashboard,
         "Contactos": _contacts,
         "Posibles duplicados": _duplicates,
         "Plan de mejora": _plan,
+        "Informes": _reports,
     }[page](contacts)
 
 

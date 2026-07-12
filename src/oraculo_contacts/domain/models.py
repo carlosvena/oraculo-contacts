@@ -22,6 +22,9 @@ class Contact:
     emails: tuple[str, ...] = ()
     phones: tuple[str, ...] = ()
     addresses: tuple[str, ...] = ()
+    organization: str = ""
+    job_title: str = ""
+    labels: tuple[str, ...] = ()
     favorite: bool = False
     birthday: date | None = None
     notes: str | None = None

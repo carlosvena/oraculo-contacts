@@ -1,0 +1,14 @@
+BEGIN:VCARD
+VERSION:4.0
+UID:demo-v4
+FN:María Ejemplo
+N:Ejemplo;María;;;
+TEL;VALUE=uri:tel:+54-11-4444-0404
+EMAIL:maria@example.test
+ADR:;;Avenida Ficticia 4;Córdoba;;;Argentina
+ORG:Organización Ejemplo
+TITLE:Directora
+BDAY:1980-05-06
+NOTE:Nota ficticia\nSegunda línea
+CATEGORIES:Familia
+END:VCARD

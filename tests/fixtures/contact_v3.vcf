@@ -1,0 +1,16 @@
+BEGIN:VCARD
+VERSION:3.0
+UID:demo-v3
+FN:José Prueba
+N:Prueba;José;;;
+TEL;TYPE=CELL:+54 9 11 5555-0303
+TEL;TYPE=WORK:0800-555-0303
+EMAIL:jose@example.test
+ADR;TYPE=HOME:;;Calle Sintética 3;Buenos Aires;;;Argentina
+ORG:Empresa Demo
+TITLE:Tester
+BDAY:19900304
+NOTE:Nota completamente ficticia
+CATEGORIES:Amigos,Trabajo
+X-CUSTOM:valor no compatible
+END:VCARD

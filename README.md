@@ -18,8 +18,13 @@ python -m pip install -e ".[ui]"
 oraculo-contacts ui
 ```
 
-La aplicación abre en el navegador y comienza con 12 contactos ficticios. Incluye resumen visual,
-explorador, candidatos a duplicado y plan de mejora. Todo funciona localmente y en modo solo lectura.
+La aplicación abre en el navegador y permite probar 12 contactos ficticios o importar una exportación
+de Google Contacts en CSV, vCard 3.0/4.0 o JSON. Incluye resumen visual, explorador, candidatos a
+duplicado, plan de mejora e informes JSON/HTML enmascarados. Todo funciona localmente y en modo solo
+lectura.
+
+`VERIFICAR_ORACULO.bat` ofrece un diagnóstico rápido en español si necesitás comprobar Python,
+instalación, datos de demostración y disponibilidad del puerto local.
 
 ## Principios de seguridad
 
@@ -73,6 +78,8 @@ su score y sus niveles de confianza se describen en
 Las propuestas, evidencia local y planes no ejecutables de v0.3 se documentan en
 [docs/safe-improvement-engine.md](docs/safe-improvement-engine.md).
 La interfaz visual y sus garantías se describen en [docs/visual-app.md](docs/visual-app.md).
+La importación de contactos reales y privacidad local se detallan en
+[docs/real-contact-import.md](docs/real-contact-import.md).
 
 ## Licencia
 

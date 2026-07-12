@@ -59,5 +59,17 @@ temporales ni se escribe en el origen. Las decisiones sobre recomendaciones vive
 por ser composición declarativa, mientras sus adaptadores, navegación de humo y funciones relevantes
 sí tienen pruebas automatizadas.
 
+## Versión 0.5: importación real y privacidad local
+
+`contact_import_service` detecta formato y delega en importadores locales de JSON, Google CSV o
+vCard. Todos reciben texto en memoria y devuelven un `ImportResult` inmutable con contactos válidos,
+advertencias seguras, rechazos y campos reconocidos/desconocidos. Una fila o propiedad defectuosa no
+detiene el resto de la importación.
+
+La UI conserva `ImportResult`, checksum y contactos en `st.session_state`. El workspace permanece
+desactivado hasta consentimiento explícito, rechaza rutas dentro del repositorio y omite notas. Los
+informes se construyen localmente y enmascaran correo, teléfono, dirección y notas salvo opt-in.
+
+
 
 
